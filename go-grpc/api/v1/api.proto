@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package api;
-option go_package = "./;v1";
+option go_package = "./;proto";
 
 message Req {
   int64 numOne = 1;
@@ -12,6 +12,6 @@ message Resp {
   int64 result = 1;
 }
 
-service StreamGreeter {
+service StreamApi {
   rpc Add(Req) returns (Resp);
 }
