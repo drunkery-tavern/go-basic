@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package api;
-option go_package = "./;golang";
+option go_package = "./;v1";
 
 message Req {
   int64 numOne = 1;
