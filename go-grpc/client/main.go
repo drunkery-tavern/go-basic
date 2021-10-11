@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	proto "go-basic/go-grpc/api/v1"
+	"go-basic/go-grpc/api/v1"
 	"google.golang.org/grpc"
 	"log"
 )
@@ -22,6 +22,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("client.Add err:%v", err)
 	}
-	fmt.Printf("resp:%v", resp)
-
+	fmt.Printf("resp:%v", resp.Result)
 }

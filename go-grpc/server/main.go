@@ -15,7 +15,8 @@ type server struct {
 
 func (s *server) Add(ctx context.Context, req *proto.Req) (resp *proto.Resp, err error) {
 	fmt.Println(req.GetNumOne(), req.GetNumTwo())
-	return &proto.Resp{Result: req.GetNumOne() + req.GetNumTwo()}, nil
+	result := req.GetNumOne() + req.GetNumTwo()
+	return &proto.Resp{Result: result}, nil
 }
 
 func main() {
