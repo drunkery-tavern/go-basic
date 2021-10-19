@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+	"strconv"
+	"sync"
+)
+
 /*func main() {
 
 	i := new(int64)
@@ -203,13 +209,236 @@ func main() {
 	fmt.Println("fun函数。。。")
 }*/
 
-func main() {
+/*func main() {
 	var ch chan int
 	//a := <-ch
 	//fmt.Println(a)
 
 	//ch <- 10
 	close(ch)
+}*/
+
+/*func main() {
+	//新建计时器，5秒后触发
+	timer := time.NewTimer(5 * time.Second)
+	//新开启一个线程来处理触发后的事件
+	go func() {
+		//等触发时的信号
+		<-timer.C
+		fmt.Println("Timer 结束。。")
+	}()
+
+	//由于上面的等待信号是在新线程中，所以代码会继续往下执行，停掉计时器
+	time.Sleep(3*time.Second)
+	stop := timer.Stop()
+	if stop {
+		fmt.Println("Timer 停止。。")
+	}
+}*/
+
+/*func main() {
+	//返回一个通道：chan，存储的是d时间间隔后的当前时间。
+	ch := time.After(3 * time.Second) //3s后
+	fmt.Printf("%T\n", ch) // <-chan time.Time
+	fmt.Println(time.Now()) //2021-10-12 10:03:18.8830048 +0800 CST m=+0.001656201
+	t := <-ch //阻塞3s
+	fmt.Println(t) //2021-10-12 10:03:21.8917384 +0800 CST m=+3.010389801
+}*/
+
+/*func main() {
+	ch1 := make(chan int)
+	ch2 := make(chan int)
+
+	go func() {
+		time.Sleep(2 * time.Second)
+		ch2 <- 200
+	}()
+	go func() {
+		time.Sleep(2 * time.Second)
+		ch1 <- 100
+	}()
+
+	select {
+	case num1 := <-ch1:
+		fmt.Println("ch1中取数据。。", num1)
+	case num2, ok := <-ch2:
+		if ok {
+			fmt.Println("ch2中取数据。。", num2)
+		} else {
+			fmt.Println("ch2通道已经关闭。。")
+		}
+	}
+}
+*/
+
+/*func main() {
+	ch1 := make(chan int)
+	ch2 := make(chan int)
+
+	//go func() {
+	//	ch1 <- 100
+	//}()
+
+	select {
+	case <-ch1:
+		fmt.Println("case1可以执行。。")
+	case <-ch2:
+		fmt.Println("case2可以执行。。")
+	case <-time.After(3 * time.Second):
+		fmt.Println("case3执行。。timeout。。")
+		default:
+			fmt.Println("执行了default。。")
+	}
+}*/
+
+/*//全局变量
+var ticket = 10 // 100张票
+
+func main() {
+	go saleTickets("售票口1") // g1,100
+	go saleTickets("售票口2") // g2,100
+	go saleTickets("售票口3") //g3,100
+	go saleTickets("售票口4") //g4,100
+
+	time.Sleep(5*time.Second)
+}
+
+func saleTickets(name string) {
+	rand.Seed(time.Now().UnixNano())
+	//for i:=1;i<=100;i++{
+	//	fmt.Println(name,"售出：",i)
+	//}
+	for { //ticket=1
+		if ticket > 0 { //g1,g3,g2,g4
+			//睡眠
+			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+			// g1 ,g3, g2,g4
+			fmt.Println(name, "售出：", ticket)  // 1 , 0, -1 , -2
+			ticket--   //0 , -1 ,-2 , -3
+		} else {
+			fmt.Println(name,"售罄，没有票了。。")
+			break
+		}
+	}
+}*/
+
+/*//全局变量
+var ticket = 10 // 100张票
+
+var wg sync.WaitGroup
+var matex sync.Mutex // 创建锁头
+
+func main() {
+	wg.Add(4)
+	go saleTickets("售票口1") // g1,100
+	go saleTickets("售票口2") // g2,100
+	go saleTickets("售票口3") //g3,100
+	go saleTickets("售票口4") //g4,100
+	wg.Wait()              // main要等待。。。
+
+	//time.Sleep(5*time.Second)
+}
+
+func saleTickets(name string) {
+	rand.Seed(time.Now().UnixNano())
+	defer wg.Done()
+	//for i:=1;i<=100;i++{
+	//	fmt.Println(name,"售出：",i)
+	//}
+	for { //ticket=1
+		matex.Lock()
+		if ticket > 0 { //g1,g3,g2,g4
+			//睡眠
+			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+			// g1 ,g3, g2,g4
+			fmt.Println(name, "售出：", ticket) // 1 , 0, -1 , -2
+			ticket--                         //0 , -1 ,-2 , -3
+		} else {
+			matex.Unlock() //解锁
+			fmt.Println(name, "售罄，没有票了。。")
+			break
+		}
+		matex.Unlock() //解锁
+	}
+}*/
+
+/*var wg sync.WaitGroup // 创建同步等待组对象
+func main()  {
+	//设置等待组中，要执行的goroutine的数量
+	wg.Add(2)
+	go fun1()
+	go fun2()
+	fmt.Println("main进入阻塞状态。。。等待wg中的子goroutine结束。。")
+	wg.Wait() //表示main goroutine进入等待，意味着阻塞
+	fmt.Println("main，解除阻塞。。")
+}
+func fun1()  {
+	for i:=1;i<=10;i++{
+		fmt.Println("fun1.。。i:",i)
+	}
+	wg.Done() //给wg等待中的执行的goroutine数量减1.同Add(-1)
+}
+func fun2()  {
+	defer wg.Done()
+	for j:=1;j<=10;j++{
+		fmt.Println("\tfun2..j,",j)
+	}
+}*/
+
+/*var (
+	rwMutex sync.RWMutex
+	wg sync.WaitGroup
+)
+
+func main() {
+	//wg.Add(2)
+	//
+	//多个同时读取
+	//go readData(1)
+	//go readData(2)
+
+	wg.Add(3)
+	go writeData(1)
+	go readData(2)
+	go writeData(3)
+
+	wg.Wait()
+	fmt.Println("main..over...")
+}
 
 
+func writeData(i int){
+	defer wg.Done()
+	fmt.Println(i,"开始写：write start。。")
+	rwMutex.Lock()//写操作上锁
+	fmt.Println(i,"正在写：writing。。。。")
+	time.Sleep(3*time.Second)
+	rwMutex.Unlock()
+	fmt.Println(i,"写结束：write over。。")
+}
+
+func readData(i int) {
+	defer wg.Done()
+	fmt.Println(i, "开始读：read start。。")
+	rwMutex.RLock() //读操作上锁
+	fmt.Println(i,"正在读取数据：reading。。。")
+	time.Sleep(3*time.Second)
+	rwMutex.RUnlock() //读操作解锁
+	fmt.Println(i,"读结束：read over。。。")
+}*/
+var m = sync.Map{}
+
+func main() {
+	wg := sync.WaitGroup{}
+	for i := 0; i < 20; i++ {
+		wg.Add(1)
+		go func(n int) {
+			key := strconv.Itoa(n)
+			m.Store(key, n)
+			value, _ := m.Load(key)
+			fmt.Printf("k=:%v,v:=%v\n", key, value)
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
 }
